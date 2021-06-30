@@ -1,0 +1,61 @@
+version: '3.5'
+
+services:
+
+  php-fpm:
+    container_name: blueocean-example-php-fpm-${APP_ENV:-dev}
+    build:
+      context: .
+      target: ${APP_ENV:-dev}
+      dockerfile: .docker/php-fpm/Dockerfile
+      args:
+        APP_ENV: ${APP_ENV:-dev}
+    volumes:
+    - ./:/var/www/html:rw
+    - ~/.composer:/root/.composer/cache
+
+  nginx:
+    container_name: blueocean-example-nginx-${APP_ENV:-dev}
+    build:
+      context: .
+      target: ${APP_ENV:-dev}
+      dockerfile: .docker/nginx/Dockerfile
+      args:
+        APP_ENV: ${APP_ENV:-dev}
+    volumes:
+    - ./:/var/www/html:rw
+    - ./var/log/nginx:/var/log/nginx:rw
+    ports:
+    - ${NGINX_PORT:-8080}:80
+    depends_on:
+    - php-fpm
+
+  mariadb:
+    container_name: blueocean-example-mariadb-${APP_ENV:-dev}
+    build:
+      context: .
+      target: ${APP_ENV:-dev}
+      dockerfile: .docker/mariadb/Dockerfile
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-bo.dev}
+      MYSQL_USER: ${MYSQL_USER:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-root}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    ports:
+    - ${MYSQL_PORT:-3306}:3306
+    volumes:
+    - blueocean-example-data:/var/lib/mysql
+
+  pma:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: blueocean-example-pma-${APP_ENV:-dev}
+    ports:
+    - ${PMA_PORT:-33060}:80
+    environment:
+      PMA_HOST: ${PMA_HOST:-mariadb}
+    depends_on:
+      - mariadb
+
+volumes:
+  blueocean-example-redis:
+  blueocean-example-data:
