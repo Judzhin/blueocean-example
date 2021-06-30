@@ -41,6 +41,7 @@ class DashboardController extends AbstractDashboardController
      */
     public function configureMenuItems(): iterable
     {
+        yield MenuItem::linkToRoute('SOAP Client', 'fa fa-eye', 'crcind');
         yield MenuItem::linkToCrud('View3D', 'fa fa-eye', View3D::class);
     }
 }

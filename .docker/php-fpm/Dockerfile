@@ -8,26 +8,13 @@ COPY .docker/php-fpm/php_${APP_ENV}.ini /usr/local/etc/php/php.ini
 COPY .docker/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
 
 RUN apt-get update && apt-get install -y git \
-#    git-core \
-#    zip \
     wget \
     unzip \
-#    vim \
-#    gnupg \
-#    curl \
-#    zlibc \
     libonig-dev \
     libzip-dev \
-#    zlib1g-dev \
-#    libpq-dev \
-#    libmcrypt-dev \
-#    libfcgi0ldbl \
-#    libfreetype6-dev \
-#    libjpeg62-turbo-dev \
-#    libpng-dev \
     libicu-dev \
-#    libz-dev \
-    && docker-php-ext-install pdo pdo_mysql mysqli intl pcntl mbstring bcmath zip \
+    libxml2-dev \
+    && docker-php-ext-install pdo pdo_mysql mysqli intl pcntl mbstring bcmath zip soap \
     && docker-php-ext-enable mysqli
 
     # MAKE tmp WRITABLE
