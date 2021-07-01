@@ -1,4 +1,9 @@
 <?php
+/**
+ * @access protected
+ * @author Judzhin Miles <info[woof-woof]msbios.com>
+ */
+declare(strict_types=1);
 
 namespace App\DataFixtures;
 
@@ -8,7 +13,6 @@ use App\Entity\View3D;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
-use Faker\Generator;
 
 class AppFixtures extends Fixture
 {
