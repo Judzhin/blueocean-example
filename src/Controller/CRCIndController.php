@@ -2,10 +2,13 @@
 
 namespace App\Controller;
 
-use App\Service\CRCIndClient;
+use App\Model\PersonIdentification;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\PropertyNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * Class CRCIndController
@@ -15,26 +18,33 @@ use Symfony\Component\Routing\Annotation\Route;
 class CRCIndController extends AbstractController
 {
     /**
-     * @param CRCIndClient $client
+     * @param \SoapClient $client
      * @return Response
+     * @throws ExceptionInterface
      */
     #[Route('/crcind', name: 'crcind')]
-    public function index(CRCIndClient $client): Response
+    public function index(\SoapClient $client): Response
     {
-        // $soapClient = new \SoapClient('https://www.crcind.com/csp/samples/SOAP.Demo.CLS?WSDL');
-        $query = strtolower('a');
-        $total = 0;
-        $result = $client->GetListByName($query);
-        dd($result->GetListByNameResult->PersonIdentification);
-        foreach ($result->GetListByNameResult->PersonIdentification as $personIdentification)
-        {
-            if (strtolower($personIdentification->Name[0]) === $query) {
-                ++$total;
+        $result = $client->GetListByName(['name' => 'a']);
+        /** @var PersonIdentification[]|array $persons */
+
+        /**
+         * @param array $result
+         * @return iterable
+         * @throws ExceptionInterface
+         */
+        $deNormalize = function (array $result): iterable {
+            $normalizer = new PropertyNormalizer;
+            $serializer = new Serializer([$normalizer]);
+
+            foreach ($result as $PersonIdentification) {
+                yield $serializer->denormalize($PersonIdentification, PersonIdentification::class);
             }
-        }
+        };
 
         return $this->render('crcind/index.html.twig', [
-            'controller_name' => 'CRCIndController',
+            'persons' => iterator_to_array($deNormalize($result->GetListByNameResult->PersonIdentification)),
         ]);
     }
+
 }

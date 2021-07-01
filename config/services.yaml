@@ -24,13 +24,7 @@ services:
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
 
-  App\Service\CRCIndClient:
+  SoapClient:
+    class: \SoapClient
     arguments:
-      $wsdl: 'https://www.crcind.com/csp/samples/SOAP.Demo.CLS?WSDL'
-#      options:
-#        connection_timeout: 40
-#        trace: true
-#        exceptions: true
-#        soap_version: SOAP_1_1
-#        cache_wsdl: WSDL_CACHE_BOTH
-#        encoding: 'UTF-8'
+      $wsdl: '%env(resolve:CRCIND_WSDL)%'
