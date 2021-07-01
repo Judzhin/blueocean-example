@@ -1,0 +1,14 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block page_title %}
+    XML Parsing
+{% endblock %}
+
+{% block page_content %}
+    <dl>
+        <dt>Total sum of all BetAmount:</dt>
+        <dd>{{ sum }}</dd>
+        <dt>XML Example:</dt>
+        <dd><pre>{{ example }}</pre></dd>
+    </dl>
+{% endblock %}
